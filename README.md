@@ -5,7 +5,7 @@ This is a tool that signs recovery/boot images for Little Kernel bootloaders mis
 
 Who is vulnurable?
 ---
-Kindle Fire HDX tablets with FW version .3.1.0
+Kindle Fire HDX tablets with FW version .3.1.0  
 Probably many devices using pre 13 June 2014 Little Kernel Bootloaders
 
 Requirements on an example Ubuntu system:
