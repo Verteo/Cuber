@@ -7,7 +7,6 @@
 #include "bootimg.h"
 #include <openssl/x509.h>
 #include <openssl/pem.h>
-#include <openssl\bn.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
