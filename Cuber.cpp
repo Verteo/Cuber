@@ -247,7 +247,7 @@ int sign_image(char* in, char* out){
 		std::cout << "Checking created signature: ";
 		if (verify_image(image, signature, imagesize_actual) == 0){
 			memcpy(image + imagesize_actual, signature, SIGNATURE_SIZE);
-			fwrite(image, imagefilesize, 1, imageoutput);
+			fwrite(image, finalimagesize, 1, imageoutput);
 		}
 	} 
 
