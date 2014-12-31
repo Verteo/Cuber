@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <unistd.h>
 
 #define SHA256_SIZE    32
 #define SIGNATURE_SIZE 256
