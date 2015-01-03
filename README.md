@@ -5,7 +5,7 @@ This is a tool that signs recovery/boot images for Little Kernel bootloaders mis
 
 Who is vulnurable?
 ---
-Kindle Fire HDX tablets with FW version .3.1.0  
+Kindle Fire HDX tablets with FW version older than 3.2.4. On 3.2.4 it is **NOT** working.  
 Probably many devices using pre 13 June 2014 Little Kernel Bootloaders
 
 Requirements on an example Ubuntu system:
@@ -19,8 +19,8 @@ python
 python-pip
 
 and the following python package:
-gmpy2
-install it using pip:
+gmpy2  
+install it using pip:  
 `sudo pip install gmpy2`
 
 Why python?
@@ -29,7 +29,7 @@ It is easier to handle bignums in python than in c++.
 
 Installation:
 ---
-Download source, go to the folder and run make.
+Download source to a folder, go to the folder and run make.
  
 Usage:
 ---
@@ -38,4 +38,6 @@ Usage:
 checks if the image would pass the signature verification  
   
 ```Cuber -sign path/to/input/image.img path/to/output/image.img```  
-creates a signature for the given image and creates a new signed at the specified location
+creates a signature for the given image and creates a new signed at the specified location  
+  
+The files ```prodcert.pem``` and ```signature.py``` are required by the program to work
