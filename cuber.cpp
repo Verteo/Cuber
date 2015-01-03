@@ -1,4 +1,4 @@
-#include "Cuber.h"
+#include "cuber.h"
 
 #define _CRT_SECURE_NO_WARNINGS  
 /*
