@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	}
 
 	if ((strcmp(argv[1], "--check" ) == 0 || strcmp(argv[1], "-c") == 0) && argc == 3){
-		std::cout << "Checking image: " << argv[2] << std::endl;
+		std::cout << "[ STATUS ] Checking image: " << argv[2] << std::endl;
 		return check_image(argv[2]);
 	}
 	if ((strcmp(argv[1], "--sign") == 0 || strcmp(argv[1], "-s") == 0) && argc == 4) {
@@ -39,11 +39,14 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 		else {
-			std::cout << "Signing image: " << argv[2] << std::endl;
+			std::cout << "[ STATUS ] Signing image: " << argv[2] << std::endl;
 			return sign_image(argv[2], argv[3]);
 		}
 	} else {
-		std::cerr << "[ USAGE ] cuber --sign /path/to/input/file.img /path/to/ouput/file.img" << std::endl;
+		std::cerr << "[ USAGE ] cuber <option> <arguments>" << std::endl;
+		std::cerr << "  -c, --check /path/to/image.img				checks if image would pass signature verification" << std::endl;
+		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;
+
 		return -1;
 	}
 
@@ -123,7 +126,7 @@ int check_image(char* in){
 	If the "real" image is bigger than the file, the file is probably corrupted
 	*/
 	if (imagefilesize < imagesize_actual){
-		std::cerr << "[ ERROR ] File is invalid (corrupted?)" << std::endl;
+		std::cerr << "[ ERROR ] File is invalid (is it corrupted?)" << std::endl;
 		return -1;
 	}
 
@@ -208,7 +211,7 @@ int sign_image(char* in, char* out){
 	If the "real" image is bigger than the file, the file is probably corrupted
 	*/
 	if (imagefilesize < imagesize_actual){
-		std::cerr << "[ ERROR ] File is invalid (corrupted?)" << std::endl;
+		std::cerr << "[ ERROR ] File is invalid (is it corrupted?)" << std::endl;
 		return -1;
 	}
 
@@ -258,7 +261,7 @@ int sign_image(char* in, char* out){
 	If the signature is created successfully AND the signature passes the check, the signature will be written into the image buffer, which will written to the output file
 	*/
 	if (sig != -1){
-		std::cout << "Checking created signature... ";
+		std::cout << "[ STATUS ] Checking created signature... ";
 		if (verify_image(image, signature, imagesize_actual) == 0){
 			memcpy(image + imagesize_actual, signature, SIGNATURE_SIZE);
 			fwrite(image, finalimagesize, 1, imageoutput);
@@ -274,7 +277,7 @@ int sign_image(char* in, char* out){
 	/*
 	Final check of the output file
 	*/
-	std::cout << "Checking created file... ";
+	std::cout << "[ STATUS ] Checking created file... ";
 	check_image(out);
 
 	return 0;
@@ -427,7 +430,7 @@ int create_signature(unsigned char* hash, unsigned char* outputbuffer){
 	*/
 	if (sigfile == NULL){
 		std::cerr << "[ ERROR ] No signature created..." << std::endl;
-		std::cerr << "Ensure python and gmpy2 are installed" << std::endl;
+		std::cerr << "	  Ensure python and gmpy2 are installed" << std::endl;
 		return -1;
 	}
 
@@ -437,7 +440,7 @@ int create_signature(unsigned char* hash, unsigned char* outputbuffer){
 	int filesize = get_file_size(sigfile);
 	if (filesize == 0){
 		std::cerr << "[ ERROR ] No signature created..." << std::endl;
-		std::cerr << "Ensure python and gmpy2 are installed as well as that signature.py is in the same folder" << std::endl;
+		std::cerr << "	  Ensure python and gmpy2 are installed as well as that signature.py is in the same directory" << std::endl;
 		remove("signature.abc");
 		return -1;
 	}
