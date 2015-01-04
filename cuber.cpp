@@ -14,7 +14,7 @@
 #include "bootimg.h"
 #include "cuber.h"
 
-#define _CRT_SECURE_NO_WARNINGS  
+#define _CRT_SECURE_NO_WARNINGS
 /*
 Returns -1 if somethings fails otherwise 0
 */
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;
 		return -1;
 	}
-	
+
 	if ((strcmp(argv[1], "--check" ) == 0 || strcmp(argv[1], "-c") == 0) && argc == 3){
 		std::cout << "[ STATUS ] Checking image... " << argv[2] << std::endl;
 		return check_image(argv[2]);
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 			return sign_image(argv[2], argv[3]);
 		}
 	} else {
-		std::cerr << "[ ERROR ] Correct number of arguments, but invalid" << std::endl << std::endl;
+		std::cerr << "[ ERROR ] Invalid arguments" << std::endl << std::endl;
 		std::cerr << "[ USAGE ] cuber <option> <arguments>" << std::endl;
 		std::cerr << "  -c, --check /path/to/image.img				checks if image would pass signature verification" << std::endl;
 		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;		return -1;
@@ -260,7 +260,7 @@ int sign_image(char* in, char* out){
 	If the signature is created successfully AND the signature passes the check, the signature will be written into the image buffer, which will written to the output file
 	*/
 	if (sig != -1){
-		std::cout << "[ STATUS ] Checking created signature... ";
+		std::cerr << std::endl << "[ STATUS ] Checking created signature... ";
 		if (verify_image(image, signature, imagesize_actual) == 0){
 			memcpy(image + imagesize_actual, signature, SIGNATURE_SIZE);
 			fwrite(image, finalimagesize, 1, imageoutput);
@@ -276,7 +276,7 @@ int sign_image(char* in, char* out){
 	/*
 	Final check of the output file
 	*/
-	std::cout << "[ STATUS ] Checking created image... ";
+	std::cerr << std::endl << "[ STATUS ] Checking created image... ";
 	check_image(out);
 
 	return 0;
@@ -354,7 +354,7 @@ int verify_image(unsigned char *image_ptr, unsigned char *signature_ptr, unsigne
 	*/
 	plain_text = (unsigned char *)calloc(sizeof(char), SIGNATURE_SIZE);
 	if (plain_text == NULL) {
-		std::cerr << "ERROR: Calloc failed during verification!" << std::endl;
+		std::cerr << "[ ERROR ] calloc failed during verification" << std::endl;
 		ret = -1;
 		goto cleanup;
 	}
@@ -373,12 +373,12 @@ int verify_image(unsigned char *image_ptr, unsigned char *signature_ptr, unsigne
 	Check if signature is equal to the calculated hash
 	*/
 	if (memcmp(plain_text, digest, hash_size) != 0) {
-		std::cerr << "[ ERROR ] Invalid signature..." << std::endl;
+		std::cerr << std::endl << "[ ERROR ] Invalid signature" << std::endl;
 		ret = -1;
 		goto cleanup;
 	}
 	else {
-		std::cout << "[ SUCCESS ] The signature is valid!" << std::endl;
+		std::cerr << std::endl << "[ SUCCESS ] The signature is valid!" << std::endl;
 	}
 
 	/* Cleanup after complete usage of openssl - cached data and objects */
