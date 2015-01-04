@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 {
 
 	if (!(argc == 3 || argc == 4)) {
+		std::cerr << "[ ERROR ] Incorrect number of arguments" << std::endl << std::endl;
 		std::cerr << "[ USAGE ] cuber <option> <arguments>" << std::endl;
 		std::cerr << "  -c, --check /path/to/image.img				checks if image would pass signature verification" << std::endl;
 		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;
@@ -43,6 +44,7 @@ int main(int argc, char* argv[])
 			return sign_image(argv[2], argv[3]);
 		}
 	} else {
+		std::cerr << "[ ERROR ] Correct number of arguments, but invalid" << std::endl << std::endl;
 		std::cerr << "[ USAGE ] cuber <option> <arguments>" << std::endl;
 		std::cerr << "  -c, --check /path/to/image.img				checks if image would pass signature verification" << std::endl;
 		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;
