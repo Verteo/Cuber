@@ -1,43 +1,50 @@
-Cuber
+cuber
 =====
 
-This is a tool that signs recovery/boot images for Little Kernel bootloaders missing the patch for for CVE-2014-0973
+This is a tool that signs recovery and boot images for Little Kernel bootloaders affected by [CVE-2014-0973](https://www.codeaurora.org/projects/security-advisories/incomplete-signature-parsing-during-boot-image-authentication-leads-to-signature-forgery-cve-2014-0973).
 
-Who is vulnurable?
+vulnerability
+--
+cuber has been tested working for 3rd-generation Kindle Fire HDX tablets with firmware versions older than 14/13.3.2.4. 
+Most likely affects many other devices using Little Kernel bootloaders built prior to June 13, 2014.
+
+requirements
 ---
-Kindle Fire HDX tablets with FW version older than 3.2.4. On 3.2.4 it is **NOT** working.  
-Probably many devices using pre 13 June 2014 Little Kernel Bootloaders
+* gcc
+* libmpc-dev
+* libmpfr-dev
+* libgmp3-dev
+* libssl-dev
+* python
+* python-dev
+* python-pip
 
-Requirements on an example Ubuntu system:
+...and python package `gmpy2` which can be installed with pip:
+```
+$ pip install gmpy2
+```
+
+installation
 ---
+After ensuring you have all the above packages installed, download the source and compile.
+```bash
+$ wget https://github.com/Verteo/Cuber/archive/master.zip
+$ unzip master.zip
+$ cd Cuber-master
+$ make
+```
 
-libmpc-dev
-libmpfr-dev
-libgmp3-dev
-libssl-dev
-python
-python-pip
-
-and the following python package:
-gmpy2  
-install it using pip:  
-`sudo pip install gmpy2`
-
-Why python?
+usage
 ---
-It is easier to handle bignums in python than in c++.
+```
+cuber --check /path/to/file.img
+```
+Checks if image would pass signature verification.<br>
+*You may also use `-c` in place of `--check`.*
 
-Installation:
----
-Download source to a folder, go to the folder and run make.
- 
-Usage:
----
- 
-```Cuber -check path/to/image.img```  
-checks if the image would pass the signature verification  
-  
-```Cuber -sign path/to/input/image.img path/to/output/image.img```  
-creates a signature for the given image and creates a new signed at the specified location  
-  
-The files ```prodcert.pem``` and ```signature.py``` are required by the program to work
+
+```
+cuber --sign /path/to/input/file.img /path/to/output/file.img
+```
+Creates a signature and outputs a signed image.<br>
+*You may also use `-s` in place of `--sign`.*
