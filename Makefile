@@ -1,2 +1,2 @@
 all:
-	g++ -Iinclude Cuber.cpp -o Cuber -lcrypto
+	g++ -Wall -Wextra -Wno-unused-result -march=native -O2 -Iinclude cuber.cpp -o cuber -lcrypto
