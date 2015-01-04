@@ -1,9 +1,24 @@
+#include <iostream>
+#include <sstream>
+#include <cstring>
+#include <string>
+#include <iomanip>
+#include <stdio.h>
+#include <openssl/sha.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "bootimg.h"
 #include "cuber.h"
 
-#define _CRT_SECURE_NO_WARNINGS  
+#define _CRT_SECURE_NO_WARNINGS
 /*
 Returns -1 if somethings fails otherwise 0
 */
+
 int main(int argc, char* argv[])
 {
 
@@ -13,12 +28,12 @@ int main(int argc, char* argv[])
 		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;
 		return -1;
 	}
-	
-	if (strcmp(argv[1], "--check" || strcmp(argv[1], "-c") == 0 && argc == 3){
+
+	if ((strcmp(argv[1], "--check" ) == 0 || strcmp(argv[1], "-c") == 0) && argc == 3){
 		std::cout << "Checking image: " << argv[2] << std::endl;
 		return check_image(argv[2]);
 	}
-	if (strcmp(argv[1], "--sign" || strcmp(argv[1], "-s") == 0 && argc == 4) {
+	if ((strcmp(argv[1], "--sign") || strcmp(argv[1], "-s") == 0) && argc == 4) {
 		if (strcmp(argv[1], argv[2]) == 0) {
 			std::cerr << "[ ERROR ] Input and output paths must be different" << std::endl;
 			return -1;
@@ -64,7 +79,7 @@ int check_image(char* in){
 	*/
 	unsigned char* image = NULL;
 	image = (unsigned char*)malloc(imagefilesize);
-	
+
 	fread(image, imagefilesize, 1, imageinput);
 	fclose(imageinput);
 
@@ -75,7 +90,7 @@ int check_image(char* in){
 	hdr = (boot_img_hdr*)malloc(sizeof(boot_img_hdr));
 	memcpy(hdr, image, sizeof(boot_img_hdr));
 
-	
+
 	/*
 	Check if image is an Android bootimage
 	*/
@@ -116,7 +131,7 @@ int check_image(char* in){
 	Verify the image.
 	*/
 	verify_image(image, image + imagesize_actual, imagesize_actual);
-	
+
 	return 0;
 }
 /*
@@ -248,7 +263,7 @@ int sign_image(char* in, char* out){
 			memcpy(image + imagesize_actual, signature, SIGNATURE_SIZE);
 			fwrite(image, finalimagesize, 1, imageoutput);
 		}
-	} 
+	}
 
 	/*
 	Cleanup
@@ -384,7 +399,7 @@ This function creates the signature
 Returns -1 if somethings fails otherwise 0
 */
 int create_signature(unsigned char* hash, unsigned char* outputbuffer){
-	
+
 	/*
 	Create file and write the hash into it binary
 	*/
