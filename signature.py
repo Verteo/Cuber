@@ -103,4 +103,3 @@ def createsig():
     file.write(long_to_bytes(pref, "big"))
 
 createsig()
-
