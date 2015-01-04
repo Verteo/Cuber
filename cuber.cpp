@@ -15,11 +15,11 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	
-	if (strcmp(argv[1], "-check") == 0 && argc == 3){
+	if ((strcmp(argv[1], "--check" ) == 0 || strcmp(argv[1], "-c") == 0) && argc == 3){
 		std::cout << "[ STATUS ] Checking image... " << argv[2] << std::endl;
 		return check_image(argv[2]);
 	}
-	if (strcmp(argv[1], "-sign") == 0 && argc == 4) {
+	if ((strcmp(argv[1], "--sign") == 0 || strcmp(argv[1], "-s") == 0) && argc == 4) {
 		if (strcmp(argv[1], argv[2]) == 0) {
 			std::cerr << "[ ERROR ] Input and output paths must be different" << std::endl;
 			return -1;
@@ -379,7 +379,7 @@ cleanup:
 		free(plain_text);
 	EVP_cleanup();
 	CRYPTO_cleanup_all_ex_data();
-	return 0;
+	return ret;
 }
 
 /*
