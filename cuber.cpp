@@ -1,3 +1,17 @@
+#include <iostream>
+#include <sstream>
+#include <cstring>
+#include <string>
+#include <iomanip>
+#include <stdio.h>
+#include <openssl/sha.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "bootimg.h"
 #include "cuber.h"
 
 #define _CRT_SECURE_NO_WARNINGS  
