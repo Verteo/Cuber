@@ -1,6 +1,20 @@
-#include "Cuber.h"
+#include <iostream>
+#include <sstream>
+#include <cstring>
+#include <string>
+#include <iomanip>
+#include <stdio.h>
+#include <openssl/sha.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "bootimg.h"
+#include "cuber.h"
 
-#define _CRT_SECURE_NO_WARNINGS  
+#define _CRT_SECURE_NO_WARNINGS
 /*
 Returns -1 if somethings fails otherwise 0
 */
@@ -8,29 +22,31 @@ int main(int argc, char* argv[])
 {
 
 	if (!(argc == 3 || argc == 4)) {
-		std::cerr << "Usage:" << std::endl;
-		std::cerr << "KindleImageTool -check /path/to/image" << std::endl;
-		std::cerr << "KindleImageTool -sign /path/to/image /path/to/ouput/file " << std::endl;
-		std::cerr << "Input and Output path have to be different" << std::endl;
+		std::cerr << "[ ERROR ] Incorrect number of arguments" << std::endl << std::endl;
+		std::cerr << "[ USAGE ] cuber <option> <arguments>" << std::endl;
+		std::cerr << "  -c, --check /path/to/image.img				checks if image would pass signature verification" << std::endl;
+		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;
 		return -1;
 	}
-	
-	if (strcmp(argv[1], "-check") == 0 && argc == 3){
-		std::cout << "Checking Image: " << argv[2] << std::endl;
+
+	if ((strcmp(argv[1], "--check" ) == 0 || strcmp(argv[1], "-c") == 0) && argc == 3){
+		std::cout << "[ STATUS ] Checking image... " << argv[2] << std::endl;
 		return check_image(argv[2]);
 	}
-	if (strcmp(argv[1], "-sign") == 0 && argc == 4) {
+	if ((strcmp(argv[1], "--sign") == 0 || strcmp(argv[1], "-s") == 0) && argc == 4) {
 		if (strcmp(argv[1], argv[2]) == 0) {
-			std::cerr << "Input and Output path have to be different" << std::endl;
+			std::cerr << "[ ERROR ] Input and output paths must be different" << std::endl;
 			return -1;
 		}
 		else {
-			std::cout << "Signing Image: " << argv[2] << std::endl;
+			std::cout << "[ STATUS ] Signing image... " << argv[2] << std::endl;
 			return sign_image(argv[2], argv[3]);
 		}
 	} else {
-		std::cerr << "Usage: KindleImageTool -sign /path/to/image /path/to/ouput/file" << std::endl;
-		return -1;
+		std::cerr << "[ ERROR ] Invalid arguments" << std::endl << std::endl;
+		std::cerr << "[ USAGE ] cuber <option> <arguments>" << std::endl;
+		std::cerr << "  -c, --check /path/to/image.img				checks if image would pass signature verification" << std::endl;
+		std::cerr << "  -s, --sign /path/to/input/file.img /path/to/output/file.img	creates a signature and outputs a signed image" << std::endl;		return -1;
 	}
 
 }
@@ -47,7 +63,7 @@ int check_image(char* in){
 	imageinput = fopen(in, "rb");
 
 	if (imageinput == NULL){
-		std::cerr << "Error: No such image!" << std::endl;
+		std::cerr << "[ ERROR ] Image does not exist at given location" << std::endl;
 		return -1;
 	}
 
@@ -56,7 +72,7 @@ int check_image(char* in){
 	*/
 	unsigned imagefilesize = get_file_size(imageinput);
 	if (imagefilesize == 0){
-		std::cerr << "Error: Image has no size!" << std::endl;
+		std::cerr << "[ ERROR ] Image has no size" << std::endl;
 		return -1;
 	}
 
@@ -81,7 +97,7 @@ int check_image(char* in){
 	Check if image is an Android bootimage
 	*/
 	if (memcmp((char*)hdr->magic, "ANDROID!", 8) != 0){
-		std::cerr << "Error: Not an Android boot image!" << std::endl;
+		std::cerr << "[ ERROR ] File is not an Android boot image" << std::endl;
 		return -1;
 	}
 
@@ -109,7 +125,7 @@ int check_image(char* in){
 	If the "real" image is bigger than the file, the file is probably corrupted
 	*/
 	if (imagefilesize < imagesize_actual){
-		std::cerr << "Error: File invalid!" << std::endl;
+		std::cerr << "[ ERROR ] File is invalid (is it corrupted?)" << std::endl;
 		return -1;
 	}
 
@@ -136,7 +152,7 @@ int sign_image(char* in, char* out){
 	imageinput = fopen(in, "rb");
 
 	if (imageinput == NULL){
-		std::cerr << "Error: No such image!" << std::endl;
+		std::cerr << "[ ERROR ] Image does not exist at given location" << std::endl;
 		return -1;
 	}
 
@@ -145,7 +161,7 @@ int sign_image(char* in, char* out){
 	*/
 	unsigned imagefilesize = get_file_size(imageinput);
 	if (imagefilesize == 0){
-		std::cerr << "Error: Image has no size!" << std::endl;
+		std::cerr << "[ ERROR ] Image has no size" << std::endl;
 		return -1;
 	}
 
@@ -166,7 +182,7 @@ int sign_image(char* in, char* out){
 	Check if image is an Android bootimage
 	*/
 	if (memcmp((char*)hdr->magic, "ANDROID!", 8) != 0){
-		std::cerr << "Error: Not an Android boot image!" << std::endl;
+		std::cerr << "[ ERROR ] File is not an Android boot image" << std::endl;
 		return -1;
 	}
 
@@ -194,7 +210,7 @@ int sign_image(char* in, char* out){
 	If the "real" image is bigger than the file, the file is probably corrupted
 	*/
 	if (imagefilesize < imagesize_actual){
-		std::cerr << "File invalid" << std::endl;
+		std::cerr << "[ ERROR ] File is invalid (is it corrupted?)" << std::endl;
 		return -1;
 	}
 
@@ -223,7 +239,7 @@ int sign_image(char* in, char* out){
 	imageoutput = fopen(out, "wb");
 
 	if (imageoutput == NULL){
-		std::cerr << "Error: Can't write image" << std::endl;
+		std::cerr << "[ ERROR ] Can't write output image to disk" << std::endl;
 		return -1;
 	}
 
@@ -244,7 +260,7 @@ int sign_image(char* in, char* out){
 	If the signature is created successfully AND the signature passes the check, the signature will be written into the image buffer, which will written to the output file
 	*/
 	if (sig != -1){
-		std::cout << "Checking created signature: ";
+		std::cerr << std::endl << "[ STATUS ] Checking created signature... ";
 		if (verify_image(image, signature, imagesize_actual) == 0){
 			memcpy(image + imagesize_actual, signature, SIGNATURE_SIZE);
 			fwrite(image, finalimagesize, 1, imageoutput);
@@ -260,7 +276,7 @@ int sign_image(char* in, char* out){
 	/*
 	Final check of the output file
 	*/
-	std::cout << "Checking created file: ";
+	std::cerr << std::endl << "[ STATUS ] Checking created image... ";
 	check_image(out);
 
 	return 0;
@@ -314,7 +330,7 @@ int verify_image(unsigned char *image_ptr, unsigned char *signature_ptr, unsigne
 	fcert = fopen("prodcert.pem", "rb");
 	if (fcert == NULL){
 		fclose(fcert);
-		std::cerr << "Error: No certificate!" << std::endl;
+		std::cerr << "[ ERROR ] Missing certificate" << std::endl;
 		ret = -1;
 		goto cleanup;
 	}
@@ -328,7 +344,7 @@ int verify_image(unsigned char *image_ptr, unsigned char *signature_ptr, unsigne
 	rsa_key = EVP_PKEY_get1_RSA(pub_key);
 
 	if (rsa_key == NULL){
-		std::cerr << "Error: Error: Couldn't obtain key from certificate!" << std::endl;
+		std::cerr << "[ ERROR ] Couldn't obtain key from certificate" << std::endl;
 		ret = -1;
 		goto cleanup;
 	}
@@ -338,7 +354,7 @@ int verify_image(unsigned char *image_ptr, unsigned char *signature_ptr, unsigne
 	*/
 	plain_text = (unsigned char *)calloc(sizeof(char), SIGNATURE_SIZE);
 	if (plain_text == NULL) {
-		std::cerr << "ERROR: Calloc failed during verification!" << std::endl;
+		std::cerr << "[ ERROR ] calloc failed during verification" << std::endl;
 		ret = -1;
 		goto cleanup;
 	}
@@ -357,12 +373,12 @@ int verify_image(unsigned char *image_ptr, unsigned char *signature_ptr, unsigne
 	Check if signature is equal to the calculated hash
 	*/
 	if (memcmp(plain_text, digest, hash_size) != 0) {
-		std::cerr << "ERROR: Signature Invalid!" << std::endl;
+		std::cerr << std::endl << "[ ERROR ] Invalid signature" << std::endl;
 		ret = -1;
 		goto cleanup;
 	}
 	else {
-		std::cout << "Signature valid!" << std::endl;
+		std::cerr << std::endl << "[ SUCCESS ] The signature is valid!" << std::endl;
 	}
 
 	/* Cleanup after complete usage of openssl - cached data and objects */
@@ -377,7 +393,7 @@ cleanup:
 		free(plain_text);
 	EVP_cleanup();
 	CRYPTO_cleanup_all_ex_data();
-	return 0;
+	return ret;
 }
 
 /*
@@ -412,8 +428,8 @@ int create_signature(unsigned char* hash, unsigned char* outputbuffer){
 	If there's no file, the python script failed
 	*/
 	if (sigfile == NULL){
-		std::cerr << "Error: No signature created!" << std::endl;
-		std::cerr << "Python and gmpy2 installed?" << std::endl;
+		std::cerr << "[ ERROR ] No signature created..." << std::endl;
+		std::cerr << "	  Ensure python and gmpy2 are installed" << std::endl;
 		return -1;
 	}
 
@@ -422,9 +438,8 @@ int create_signature(unsigned char* hash, unsigned char* outputbuffer){
 	*/
 	int filesize = get_file_size(sigfile);
 	if (filesize == 0){
-		std::cerr << "Error: No signature created!" << std::endl;
-		std::cerr << "Python and gmpy2 installed?" << std::endl;
-		std::cerr << "signature.py in the same folder as the tool?" << std::endl;
+		std::cerr << "[ ERROR ] No signature created..." << std::endl;
+		std::cerr << "	  Ensure python and gmpy2 are installed as well as that signature.py is in the same directory" << std::endl;
 		remove("signature.abc");
 		return -1;
 	}
@@ -435,7 +450,7 @@ int create_signature(unsigned char* hash, unsigned char* outputbuffer){
 	unsigned char* buffer = NULL;
 	buffer = (unsigned char*)malloc(filesize);
 	if (buffer == NULL){
-		std::cerr << "Error allocating memory" << std::endl;
+		std::cerr << "[ ERROR ] Could not allocate memory" << std::endl;
 		return -1;
 	}
 	fread(buffer, 1, filesize, sigfile);

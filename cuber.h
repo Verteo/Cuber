@@ -1,16 +1,3 @@
-#include <iostream>  
-#include <sstream>  
-#include <string>  
-#include <iomanip>  
-#include <stdio.h>  
-#include <openssl/sha.h>  
-#include "bootimg.h"
-#include <openssl/x509.h>
-#include <openssl/pem.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #define SHA256_SIZE    32
 #define SIGNATURE_SIZE 256
 #define SIGNATURE_SIZE_BITS 2048
